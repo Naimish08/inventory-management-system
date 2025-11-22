@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, Bell, HelpCircle, Settings, User, Package, Warehouse, FileText, Activity, BarChart3, Box, Clock, List, LayoutGrid, Plus, Truck, AlertTriangle, LogOut } from 'lucide-react';
 import { isAuthenticated, logout, getUser } from '@/lib/auth';
+import Sidebar from '@/components/Sidebar';
 
 // Type Definitions
 interface StockItem {
@@ -22,7 +23,7 @@ interface StockItem {
 
 export default function StockPage() {
     const router = useRouter();
-    const [activeNav, setActiveNav] = useState<string>('stock');
+
     const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<{ name: string; email: string } | null>(null);
@@ -72,54 +73,8 @@ export default function StockPage() {
     return (
         <div className="flex h-screen bg-gray-50">
             {/* Sidebar */}
-            <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
-                <div className="p-6 border-b border-gray-200">
-                    <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                            <Package className="w-5 h-5 text-white" />
-                        </div>
-                        <span className="font-semibold text-gray-900">InventoryMS</span>
-                    </div>
-                </div>
-
-                <nav className="flex-1 p-4 space-y-1">
-                    <button
-                        onClick={() => router.push('/receipts')}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-gray-700 hover:bg-gray-100"
-                    >
-                        <Package className="w-5 h-5" />
-                        Receipt Operations
-                    </button>
-                    <button
-                        onClick={() => router.push('/delivery')}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-gray-700 hover:bg-gray-100"
-                    >
-                        <Truck className="w-5 h-5" />
-                        Delivery Operations
-                    </button>
-                    <button
-                        onClick={() => router.push('/stock')}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors bg-blue-50 text-blue-600"
-                    >
-                        <Box className="w-5 h-5" />
-                        Stock
-                    </button>
-                    <button
-                        onClick={() => router.push('/history')}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-gray-700 hover:bg-gray-100"
-                    >
-                        <Clock className="w-5 h-5" />
-                        Move History
-                    </button>
-                    <button
-                        onClick={() => router.push('/settings')}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-gray-700 hover:bg-gray-100"
-                    >
-                        <Settings className="w-5 h-5" />
-                        Settings
-                    </button>
-                </nav>
-            </aside>
+            {/* Sidebar */}
+            <Sidebar active="stock" />
 
             {/* Main Content */}
             <div className="flex-1 flex flex-col overflow-hidden">
@@ -209,9 +164,11 @@ export default function StockPage() {
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="flex items-center gap-2">
                                                         <div className="text-sm font-medium text-gray-900">{item.product}</div>
-                                                        <div title="Low Stock">
-                                                            <AlertTriangle className="w-4 h-4 text-red-500" />
-                                                        </div>
+                                                        {item.onHand <= item.minStock && (
+                                                            <div title="Low Stock">
+                                                                <AlertTriangle className="w-4 h-4 text-red-500" />
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">

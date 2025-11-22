@@ -3,7 +3,8 @@
 import { useState } from 'react';
 
 import { useRouter } from 'next/navigation';
-import { Search, Bell, HelpCircle, Settings, User, Package, Warehouse, FileText, Activity, BarChart3, Box, Clock, List, LayoutGrid, Plus, Truck } from 'lucide-react';
+import { Search, Bell, HelpCircle, Settings, User, Package, Warehouse, FileText, Activity, BarChart3, Box, Clock, List, LayoutGrid, Plus, Truck, ArrowDown, ArrowUp, X, CheckCircle, Printer } from 'lucide-react';
+import Sidebar from '@/components/Sidebar';
 
 import type { LucideIcon } from 'lucide-react';
 
@@ -73,16 +74,7 @@ export default function ReceiptsPage() {
     { id: '8', reference: 'WH/IN/0008', from: 'vendor', to: 'WH/Stock3', contact: 'Azure Interior', scheduleDate: null, status: 'In Progress', responsible: 'Lisa Anderson', products: [] },
   ]);
 
-  const navItems: NavItem[] = [
-    { id: 'dashboard', icon: BarChart3, label: 'Dashboard' },
-    { id: 'receipt', icon: Package, label: 'Receipt Operations' },
-    { id: 'delivery', icon: Package, label: 'Delivery Operations' },
-    { id: 'stock', icon: Box, label: 'Stock' },
-    { id: 'warehouse', icon: Warehouse, label: 'Warehouse' },
-    { id: 'operations', icon: Activity, label: 'Dashboard Operations' },
-    { id: 'history', icon: Clock, label: 'Move History' },
-    { id: 'support', icon: HelpCircle, label: 'Support' },
-  ];
+
 
 
   const statusOptions: Receipt['status'][] = ['Ready', 'Draft', 'In Progress', 'Done', 'Cancelled'];
@@ -166,10 +158,10 @@ export default function ReceiptsPage() {
       if (!printWindow) return;
 
       const totalQuantity = selectedReceipt.products?.reduce((sum, p) => sum + p.quantity, 0) || 0;
-      const currentDate = new Date().toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
+      const currentDate = new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
       });
 
       printWindow.document.write(`
@@ -355,16 +347,16 @@ export default function ReceiptsPage() {
                 </tr>
               </thead>
               <tbody>
-                ${selectedReceipt.products && selectedReceipt.products.length > 0 ? 
-                  selectedReceipt.products.map(product => `
+                ${selectedReceipt.products && selectedReceipt.products.length > 0 ?
+          selectedReceipt.products.map(product => `
                     <tr>
                       <td>${product.productName}</td>
                       <td>${product.productCode}</td>
                       <td style="text-align: right;">${product.quantity}</td>
                     </tr>
-                  `).join('') : 
-                  '<tr><td colspan="3" style="text-align: center; padding: 30px; color: #999;">No products listed</td></tr>'
-                }
+                  `).join('') :
+          '<tr><td colspan="3" style="text-align: center; padding: 30px; color: #999;">No products listed</td></tr>'
+        }
               </tbody>
             </table>
 
@@ -396,7 +388,7 @@ export default function ReceiptsPage() {
       `);
 
       printWindow.document.close();
-      
+
       // Wait for content to load, then print
       setTimeout(() => {
         printWindow.focus();
@@ -449,7 +441,7 @@ export default function ReceiptsPage() {
     // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      const matchesSearch = 
+      const matchesSearch =
         receipt.reference.toLowerCase().includes(query) ||
         receipt.contact.toLowerCase().includes(query);
       if (!matchesSearch) return false;
@@ -533,54 +525,8 @@ export default function ReceiptsPage() {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
-        <div className="p-6 border-b border-gray-200">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <Package className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-semibold text-gray-900">InventoryMS</span>
-          </div>
-        </div>
-
-        <nav className="flex-1 p-4 space-y-1">
-          <button
-            onClick={() => router.push('/receipts')}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors bg-blue-50 text-blue-600"
-          >
-            <Package className="w-5 h-5" />
-            Receipt Operations
-          </button>
-          <button
-            onClick={() => router.push('/delivery')}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-gray-700 hover:bg-gray-100"
-          >
-            <Truck className="w-5 h-5" />
-            Delivery Operations
-          </button>
-          <button
-            onClick={() => router.push('/stock')}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-gray-700 hover:bg-gray-100"
-          >
-            <Box className="w-5 h-5" />
-            Stock
-          </button>
-          <button
-            onClick={() => router.push('/history')}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-gray-700 hover:bg-gray-100"
-          >
-            <Clock className="w-5 h-5" />
-            Move History
-          </button>
-          <button
-            onClick={() => router.push('/settings')}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-gray-700 hover:bg-gray-100"
-          >
-            <Settings className="w-5 h-5" />
-            Settings
-          </button>
-        </nav>
-      </aside>
+      {/* Sidebar */}
+      <Sidebar active="receipts" />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
@@ -612,7 +558,7 @@ export default function ReceiptsPage() {
           {/* Receipts Header */}
           <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <button 
+              <button
                 onClick={() => setIsModalOpen(true)}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors"
               >
@@ -668,7 +614,7 @@ export default function ReceiptsPage() {
                 <table className="w-full">
                   <thead className="bg-gray-50 border-b border-gray-200">
                     <tr>
-                      <th 
+                      <th
                         className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
                         onClick={() => handleSort('reference')}
                       >
@@ -685,7 +631,7 @@ export default function ReceiptsPage() {
                           )}
                         </div>
                       </th>
-                      <th 
+                      <th
                         className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
                         onClick={() => handleSort('from')}
                       >
@@ -702,7 +648,7 @@ export default function ReceiptsPage() {
                           )}
                         </div>
                       </th>
-                      <th 
+                      <th
                         className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
                         onClick={() => handleSort('to')}
                       >
@@ -719,7 +665,7 @@ export default function ReceiptsPage() {
                           )}
                         </div>
                       </th>
-                      <th 
+                      <th
                         className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
                         onClick={() => handleSort('contact')}
                       >
@@ -736,7 +682,7 @@ export default function ReceiptsPage() {
                           )}
                         </div>
                       </th>
-                      <th 
+                      <th
                         className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
                         onClick={() => handleSort('scheduleDate')}
                       >
@@ -753,7 +699,7 @@ export default function ReceiptsPage() {
                           )}
                         </div>
                       </th>
-                      <th 
+                      <th
                         className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
                         onClick={() => handleSort('status')}
                       >
@@ -781,16 +727,15 @@ export default function ReceiptsPage() {
                       </tr>
                     ) : (
                       filteredReceipts.map((receipt) => (
-                        <tr 
-                          key={receipt.id} 
+                        <tr
+                          key={receipt.id}
                           onClick={() => setSelectedReceiptId(receipt.id)}
                           onDoubleClick={() => {
                             setSelectedReceiptId(receipt.id);
                             setIsDetailModalOpen(true);
                           }}
-                          className={`hover:bg-gray-50 transition-colors cursor-pointer ${
-                            selectedReceiptId === receipt.id ? 'bg-blue-50 border-l-4 border-blue-600' : ''
-                          }`}
+                          className={`hover:bg-gray-50 transition-colors cursor-pointer ${selectedReceiptId === receipt.id ? 'bg-blue-50 border-l-4 border-blue-600' : ''
+                            }`}
                         >
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm font-medium text-gray-900">{receipt.reference}</div>
@@ -1094,7 +1039,7 @@ export default function ReceiptsPage() {
                   {/* Products Section */}
                   <div className="border-t border-gray-200 pt-4">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Products</h3>
-                    
+
                     {/* Products Table */}
                     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden mb-4">
                       <table className="w-full">
