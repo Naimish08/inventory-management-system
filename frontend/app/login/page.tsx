@@ -68,22 +68,31 @@ export default function LoginPage() {
     setFieldErrors((prev) => ({ ...prev, password: error }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
+  setError(null);
+  
+  // Final validation
+  const loginIdError = validateLoginId(loginId);
+  const passwordError = validatePassword(password);
+  
+  if (loginIdError || passwordError) {
+    setFieldErrors({
+      loginId: loginIdError,
+      password: passwordError,
+    });
+    setLoading(false);
+    return;
+  }
 
-    // Final validation
-    const loginIdError = validateLoginId(loginId);
-    const passwordError = validatePassword(password);
-
-    if (loginIdError || passwordError) {
-      setFieldErrors({
-        loginId: loginIdError,
-        password: passwordError,
-      });
-      setLoading(false);
-      return;
+  try {
+    const result: LoginResponse = await login(loginId, password);
+    if (result?.error) {
+      setError(result.error);
+    } else {
+      // On success, navigate to dashboard
+      router.push("/dashboard");
     }
 
     try {
